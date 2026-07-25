@@ -1,0 +1,6 @@
+{
+  "name": "Gujarati Indian Wedding",
+  "description": "A welcoming, elegant Gujarati Indian wedding portal for guests featuring multi-day schedules, tradition guides, location maps, and Google Sheet RSVP integration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
