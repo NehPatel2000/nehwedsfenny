@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Navbar } from './components/Navbar';
-import { Hero } from './components/Hero';
-import { ScheduleSection } from './components/ScheduleSection';
-import { TraditionGuide } from './components/TraditionGuide';
-import { LocationSection } from './components/LocationSection';
-import { RsvpSection } from './components/RsvpSection';
-import { FaqSection } from './components/FaqSection';
-import { Footer } from './components/Footer';
-import { defaultWeddingDetails, defaultSchedules, defaultTraditions, defaultVenues } from './data/weddingData';
-import { WeddingDetails } from './types';
+import React, { useState, useEffect } from "react";
+import { Navbar } from "./components/Navbar";
+import { Hero } from "./components/Hero";
+import { ScheduleSection } from "./components/ScheduleSection";
+import { LocationSection } from "./components/LocationSection";
+import { RsvpSection } from "./components/RsvpSection";
+import { FaqSection } from "./components/FaqSection";
+import { Footer } from "./components/Footer";
+import {
+  defaultWeddingDetails,
+  defaultSchedules,
+  defaultVenues,
+} from "./data/weddingData";
+import { WeddingDetails } from "./types";
 
 export default function App() {
   const [weddingDetails, setWeddingDetails] = useState<WeddingDetails>(() => {
-    const savedSheetUrl = localStorage.getItem('wedding_google_sheet_url');
+    const savedSheetUrl = localStorage.getItem("wedding_google_sheet_url");
     if (savedSheetUrl) {
       return { ...defaultWeddingDetails, googleSheetRsvpUrl: savedSheetUrl };
     }
@@ -20,14 +23,14 @@ export default function App() {
   });
 
   const handleUpdateRsvpUrl = (newUrl: string) => {
-    localStorage.setItem('wedding_google_sheet_url', newUrl);
+    localStorage.setItem("wedding_google_sheet_url", newUrl);
     setWeddingDetails((prev) => ({ ...prev, googleSheetRsvpUrl: newUrl }));
   };
 
   const handleOpenRsvpScroll = () => {
-    const rsvpElement = document.getElementById('rsvp');
+    const rsvpElement = document.getElementById("rsvp");
     if (rsvpElement) {
-      rsvpElement.scrollIntoView({ behavior: 'smooth' });
+      rsvpElement.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -40,18 +43,12 @@ export default function App() {
       />
 
       {/* Hero Header with Countdown & Blessing */}
-      <Hero
-        details={weddingDetails}
-        onOpenRsvp={handleOpenRsvpScroll}
-      />
+      <Hero details={weddingDetails} onOpenRsvp={handleOpenRsvpScroll} />
 
       {/* Main Content Sections */}
       <main className="flex-1">
         {/* 2-Day Schedule (Day 1: Grah Shanti & Pithi; Day 2: Wedding) */}
         <ScheduleSection schedules={defaultSchedules} />
-
-        {/* Gujarati Traditions Explainer Guide for Guests */}
-        <TraditionGuide traditions={defaultTraditions} />
 
         {/* Locations, Venues & Maps */}
         <LocationSection venues={defaultVenues} />
@@ -67,10 +64,7 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <Footer
-        details={weddingDetails}
-        onOpenRsvp={handleOpenRsvpScroll}
-      />
+      <Footer details={weddingDetails} onOpenRsvp={handleOpenRsvpScroll} />
     </div>
   );
 }

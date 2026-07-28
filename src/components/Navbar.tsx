@@ -71,12 +71,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
             Schedule
           </a>
           <a
-            href="#traditions"
-            className="transition-colors hover:text-[#990000]"
-          >
-            Traditions Guide
-          </a>
-          <a
             href="#locations"
             className="transition-colors hover:text-[#990000]"
           >
@@ -120,13 +114,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
             className="block py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#2D2424] border-b border-[#2D2424]/10"
           >
             Schedule (Day 1 & 2)
-          </a>
-          <a
-            href="#traditions"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#2D2424] border-b border-[#2D2424]/10"
-          >
-            Gujarati Traditions
           </a>
           <a
             href="#locations"

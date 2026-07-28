@@ -25,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({ details, onOpenRsvp }) => {
         {/* Couple Names */}
         <div className="space-y-2">
           <h3 className="font-serif-display text-4xl sm:text-5xl font-bold text-[#FAF9F6] tracking-tight">
-            {details.brideName} & {details.groomName}
+            {details.groomName} & {details.brideName}
           </h3>
           <p className="text-[#D4AF37] text-[10px] uppercase tracking-[0.25em] font-bold">
             {details.displayDateRange} • {details.primaryLocation}
@@ -36,10 +36,6 @@ export const Footer: React.FC<FooterProps> = ({ details, onOpenRsvp }) => {
         <div className="flex flex-wrap items-center justify-center gap-6 text-[11px] text-stone-300 font-medium uppercase tracking-wider">
           <a href="#schedule" className="hover:text-[#D4AF37] transition-colors">
             Schedule (Day 1 & Day 2)
-          </a>
-          <span className="text-[#D4AF37]">•</span>
-          <a href="#traditions" className="hover:text-[#D4AF37] transition-colors">
-            Gujarati Traditions Guide
           </a>
           <span className="text-[#D4AF37]">•</span>
           <a href="#locations" className="hover:text-[#D4AF37] transition-colors">

@@ -80,7 +80,7 @@ export const Hero: React.FC<HeroProps> = ({ details, onOpenRsvp }) => {
 
         {/* Couple Names Display */}
         <h1 className="font-serif-display text-5xl sm:text-7xl lg:text-8xl font-bold tracking-tight text-[#2D2424] my-4 leading-none">
-          {details.brideName} <span className="text-[#990000] font-normal italic font-serif-display">&</span> {details.groomName}
+          {details.groomName} <span className="text-[#990000] font-normal italic font-serif-display">&</span> {details.brideName}
         </h1>
 
         <p className="font-sans-body text-stone-600 text-sm sm:text-base max-w-xl mx-auto font-light leading-relaxed mb-8">
