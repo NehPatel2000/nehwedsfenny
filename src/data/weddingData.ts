@@ -7,7 +7,7 @@ export const defaultWeddingDetails: WeddingDetails = {
   weddingDateIso: "2027-07-04T09:00:00", // Default upcoming wedding date
   displayDateRange: "Friday, June 7 & Saturday, June 8, 2027",
   primaryLocation: "Bridlewood of Madison, Madison, MS",
-  googleSheetRsvpUrl: "https://docs.google.com/forms/d/e/1FAIpQLSc_EXAMPLE_GUJARATI_WEDDING_RSVP/viewform",
+  googleSheetRsvpUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeMonHVXFKAt1PL_oRblDjaWRtwE553G0AadhEp111acKlwrw/viewform?usp=header",
 };
 
 export const defaultVenues: { day1: VenueInfo; day2: VenueInfo } = {
@@ -18,7 +18,7 @@ export const defaultVenues: { day1: VenueInfo; day2: VenueInfo } = {
     googleMapsUrl: "https://www.google.com/maps/place/Bridlewood+of+Madison",
     description: "An elegant outdoor courtyard for Pithi (Haldi) followed by the grand indoor ballroom for Grah Shanti and Sangeet.",
     parkingInfo: "Complimentary valet parking available at the main courtyard entrance.",
-    hotelInfo: "Group rate available at San Jose Marriott under 'Priya & Rohan Wedding'."
+    hotelInfo: "Group rate available at San Jose Marriott under 'Neh & Fenny Wedding'."
   },
   day2: {
     name: "Bridlewood of Madison",

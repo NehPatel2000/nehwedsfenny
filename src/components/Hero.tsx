@@ -94,10 +94,15 @@ export const Hero: React.FC<HeroProps> = ({ details, onOpenRsvp }) => {
             <span>{details.displayDateRange}</span>
           </div>
 
-          <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#2D2424]/15 text-[#2D2424] font-semibold uppercase tracking-wider text-[11px]">
+          <a
+            href="https://www.google.com/maps/place/Bridlewood+of+Madison"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#FAF9F6] border border-[#2D2424]/15 text-[#2D2424] font-semibold uppercase tracking-wider text-[11px] hover:bg-[#FFFDF8] transition-colors"
+          >
             <MapPin className="w-4 h-4 text-[#990000] shrink-0" />
             <span>{details.primaryLocation}</span>
-          </div>
+          </a>
         </div>
 
         {/* Editorial Countdown Clock */}

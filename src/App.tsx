@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { ScheduleSection } from "./components/ScheduleSection";
-import { LocationSection } from "./components/LocationSection";
 import { RsvpSection } from "./components/RsvpSection";
 import { FaqSection } from "./components/FaqSection";
 import { Footer } from "./components/Footer";
 import {
   defaultWeddingDetails,
   defaultSchedules,
-  defaultVenues,
 } from "./data/weddingData";
 import { WeddingDetails } from "./types";
 
@@ -49,9 +47,6 @@ export default function App() {
       <main className="flex-1">
         {/* 2-Day Schedule (Day 1: Grah Shanti & Pithi; Day 2: Wedding) */}
         <ScheduleSection schedules={defaultSchedules} />
-
-        {/* Locations, Venues & Maps */}
-        <LocationSection venues={defaultVenues} />
 
         {/* RSVP Section linking to Google Sheet */}
         <RsvpSection

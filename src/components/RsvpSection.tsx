@@ -3,6 +3,7 @@ import { Send, CheckCircle2, ExternalLink, Settings, Sparkles, Heart, Edit2, Fil
 import { GaneshIcon } from './GaneshIcon';
 import { WeddingDetails, RsvpResponse } from '../types';
 import confetti from 'canvas-confetti';
+import { buildRsvpSubmissionPayload, submitRsvpToEndpoint } from '../utils/rsvp';
 
 interface RsvpSectionProps {
   details: WeddingDetails;
@@ -34,17 +35,29 @@ export const RsvpSection: React.FC<RsvpSectionProps> = ({ details, onUpdateRsvpU
     });
   };
 
-  const handleInlineSubmit = (e: React.FormEvent) => {
+  const handleInlineSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     triggerConfetti();
-    setIsSubmitted(true);
+
+    const payload = buildRsvpSubmissionPayload(formData);
 
     // Save response locally for guest convenience
     const existingResponses = JSON.parse(localStorage.getItem('guest_rsvps') || '[]');
-    existingResponses.push({ ...formData, timestamp: new Date().toISOString() });
+    existingResponses.push(payload);
     localStorage.setItem('guest_rsvps', JSON.stringify(existingResponses));
 
-    // After brief pause, offer opening the Google Sheet
+    try {
+      const autoSubmitUrl = localStorage.getItem('wedding_rsvp_webhook_url');
+      if (autoSubmitUrl) {
+        await submitRsvpToEndpoint(autoSubmitUrl, payload);
+      }
+    } catch (error) {
+      console.warn('Auto-submit RSVP failed, falling back to the form link.', error);
+    }
+
+    setIsSubmitted(true);
+
+    // After brief pause, offer opening the Google Sheet / Form
     setTimeout(() => {
       window.open(details.googleSheetRsvpUrl, '_blank');
     }, 1200);
@@ -129,6 +142,9 @@ export const RsvpSection: React.FC<RsvpSectionProps> = ({ details, onUpdateRsvpU
               </div>
               <p className="text-[10px] text-stone-400 mt-1.5">
                 Paste your live Google Form or Google Sheet share link here. It persists locally so guests click your real form.
+              </p>
+              <p className="text-[10px] text-stone-400 mt-2">
+                To auto-submit, save a webhook URL in local storage under <span className="font-mono">wedding_rsvp_webhook_url</span>.
               </p>
             </form>
           )}
@@ -229,8 +245,8 @@ export const RsvpSection: React.FC<RsvpSectionProps> = ({ details, onUpdateRsvpU
                       className="w-4 h-4 text-[#990000] rounded focus:ring-[#990000]"
                     />
                     <div>
-                      <span className="font-bold text-xs text-[#2D2424] block">Day 1: Grah Shanti & Garba</span>
-                      <span className="text-[10px] text-stone-500">Sat, Nov 14</span>
+                      <span className="font-bold text-xs text-[#2D2424] block">Day 1: Grah Shanti & Pithi</span>
+                      <span className="text-[10px] text-stone-500">Friday, June 4</span>
                     </div>
                   </label>
 
@@ -242,8 +258,8 @@ export const RsvpSection: React.FC<RsvpSectionProps> = ({ details, onUpdateRsvpU
                       className="w-4 h-4 text-[#990000] rounded focus:ring-[#990000]"
                     />
                     <div>
-                      <span className="font-bold text-xs text-[#2D2424] block">Day 2: Wedding & Reception</span>
-                      <span className="text-[10px] text-stone-500">Sun, Nov 15</span>
+                      <span className="font-bold text-xs text-[#2D2424] block">Day 2: Wedding</span>
+                      <span className="text-[10px] text-stone-500">Sat, June 5</span>
                     </div>
                   </label>
                 </div>
@@ -264,7 +280,7 @@ export const RsvpSection: React.FC<RsvpSectionProps> = ({ details, onUpdateRsvpU
 
               <div>
                 <label className="block text-[10px] font-bold uppercase tracking-wider text-[#2D2424] mb-1">
-                  Warm Note or Message for Priya & Rohan
+                  Warm Note or Message for Neh & Fenny
                 </label>
                 <textarea
                   rows={2}

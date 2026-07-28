@@ -38,10 +38,6 @@ export const Footer: React.FC<FooterProps> = ({ details, onOpenRsvp }) => {
             Schedule (Day 1 & Day 2)
           </a>
           <span className="text-[#D4AF37]">•</span>
-          <a href="#locations" className="hover:text-[#D4AF37] transition-colors">
-            Locations & Maps
-          </a>
-          <span className="text-[#D4AF37]">•</span>
           <button onClick={onOpenRsvp} className="hover:text-[#D4AF37] transition-colors underline decoration-[#990000] underline-offset-4 font-bold text-[#FAF9F6]">
             RSVP (Google Sheet)
           </button>
@@ -50,7 +46,7 @@ export const Footer: React.FC<FooterProps> = ({ details, onOpenRsvp }) => {
         <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#D4AF37]/50 to-transparent mx-auto my-4" />
 
         <p className="text-stone-400 text-xs font-light max-w-md mx-auto leading-relaxed">
-          We look forward to celebrating this sacred milestone with our loved ones. With heart and gratitude, Priya & Rohan.
+          We look forward to celebrating this sacred milestone with our loved ones. With heart and gratitude, Neh & Fenny.
         </p>
       </div>
     </footer>

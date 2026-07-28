@@ -54,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
           </div>
           <div>
             <span className="font-serif-display text-xl sm:text-2xl font-bold tracking-tight text-[#2D2424] block leading-tight">
-              Priya <span className="text-[#990000] italic font-normal">&</span> Rohan
+              Neh <span className="text-[#990000] italic font-normal">&</span> Fenny
             </span>
             <span className="block text-[9px] uppercase tracking-[0.25em] font-semibold text-[#990000]">
               Gujarati Indian Wedding
@@ -69,12 +69,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
             className="transition-colors hover:text-[#990000]"
           >
             Schedule
-          </a>
-          <a
-            href="#locations"
-            className="transition-colors hover:text-[#990000]"
-          >
-            Locations & Maps
           </a>
           <a
             href="#faq"
@@ -114,13 +108,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
             className="block py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#2D2424] border-b border-[#2D2424]/10"
           >
             Schedule (Day 1 & 2)
-          </a>
-          <a
-            href="#locations"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block py-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#2D2424] border-b border-[#2D2424]/10"
-          >
-            Locations & Venues
           </a>
           <a
             href="#faq"
