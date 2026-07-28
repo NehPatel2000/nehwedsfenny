@@ -15,7 +15,7 @@ export const defaultVenues: { day1: VenueInfo; day2: VenueInfo } = {
     name: "Bridlewood of Madison",
     address: "3024 MS-22",
     city: "Madison, MS 39110",
-    googleMapsUrl: "https://www.google.com/maps/place/Bridlewood+of+Madison",
+    googleMapsUrl: "https://www.google.com/maps/place/Bridlewood+of+Madison/@32.5683555,-90.17173,862m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8629c51690047989:0xac5b7cfebfbff463!8m2!3d32.5683555!4d-90.17173!16s%2Fg%2F11fxvfjkmq?entry=ttu&g_ep=EgoyMDI2MDcyNy4wIKXMDSoASAFQAw%3D%3D",
     description: "An elegant outdoor courtyard for Pithi (Haldi) followed by the grand indoor ballroom for Grah Shanti and Sangeet.",
     parkingInfo: "Complimentary valet parking available at the main courtyard entrance.",
     hotelInfo: "Group rate available at San Jose Marriott under 'Neh & Fenny Wedding'."
@@ -24,7 +24,7 @@ export const defaultVenues: { day1: VenueInfo; day2: VenueInfo } = {
     name: "Bridlewood of Madison",
     address: "3024 MS-22",
     city: "Madison, MS 39110",
-    googleMapsUrl: "https://www.google.com/maps/place/Bridlewood+of+Madison",
+    googleMapsUrl: "https://www.google.com/maps/place/Bridlewood+of+Madison/@32.5683555,-90.17173,862m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8629c51690047989:0xac5b7cfebfbff463!8m2!3d32.5683555!4d-90.17173!16s%2Fg%2F11fxvfjkmq?entry=ttu&g_ep=EgoyMDI2MDcyNy4wIKXMDSoASAFQAw%3D%3D",
     description: "Serene glass pavilion surrounded by lush gardens, featuring an ornate traditional Mandap overlooking the reflecting pool.",
     parkingInfo: "Dedicated self-parking garage adjacent to Pavilion Entrance B.",
     hotelInfo: "Shuttle services provided continuously between partner hotels and venue."
