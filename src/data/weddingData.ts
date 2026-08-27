@@ -5,7 +5,7 @@ export const defaultWeddingDetails: WeddingDetails = {
   groomName: "Neh",
   tagline: "Together with their families, invite you to celebrate their union in love and tradition.",
   weddingDateIso: "2027-07-04T09:00:00", // Default upcoming wedding date
-  displayDateRange: "Friday, June 7 & Saturday, June 8, 2027",
+  displayDateRange: "Friday, June 4 & Saturday, June 5, 2027",
   primaryLocation: "Bridlewood of Madison, Madison, MS",
   googleSheetRsvpUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeMonHVXFKAt1PL_oRblDjaWRtwE553G0AadhEp111acKlwrw/viewform?usp=header",
 };
