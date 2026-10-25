@@ -5,10 +5,9 @@ import confetti from 'canvas-confetti';
 
 interface NavbarProps {
   onOpenRsvp: () => void;
-  rsvpUrl: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
+export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -126,7 +125,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
               className="w-full flex items-center justify-center gap-2 py-3 rounded-lg text-xs font-bold uppercase tracking-[0.2em] text-[#FAF9F6] bg-[#990000] shadow"
             >
               <Send className="w-4 h-4" />
-              <span>RSVP via Google Sheet</span>
+              <span>RSVP</span>
             </button>
           </div>
         </div>
@@ -134,4 +133,3 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenRsvp, rsvpUrl }) => {
     </header>
   );
 };
-

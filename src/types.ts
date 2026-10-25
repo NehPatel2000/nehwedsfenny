@@ -46,8 +46,6 @@ export interface WeddingDetails {
   weddingDateIso: string; // ISO format for countdown timer
   displayDateRange: string;
   primaryLocation: string;
-  googleSheetRsvpUrl: string;
-  googleFormEmbedUrl?: string;
 }
 
 export interface RsvpResponse {

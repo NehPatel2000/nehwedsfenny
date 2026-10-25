@@ -7,7 +7,6 @@ export const defaultWeddingDetails: WeddingDetails = {
   weddingDateIso: "2027-07-04T09:00:00", // Default upcoming wedding date
   displayDateRange: "Friday, June 4 & Saturday, June 5, 2027",
   primaryLocation: "Bridlewood of Madison, Madison, MS",
-  googleSheetRsvpUrl: "https://docs.google.com/forms/d/e/1FAIpQLSeMonHVXFKAt1PL_oRblDjaWRtwE553G0AadhEp111acKlwrw/viewform?usp=header",
 };
 
 export const defaultVenues: { day1: VenueInfo; day2: VenueInfo } = {
@@ -115,6 +114,6 @@ export const guestFaqs = [
   },
   {
     question: "How do I submit my RSVP?",
-    answer: "Click the 'RSVP Now' button anywhere on this page to submit your response directly through our Google Sheet/Form. Please RSVP by October 1st, 2026."
+    answer: "Click the 'RSVP' button anywhere on this page and submit the form. Please RSVP by October 1st, 2026."
   }
 ];

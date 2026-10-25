@@ -7,9 +7,10 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "node --import tsx --test src/utils/rsvp.test.ts backend/index.test.mjs scripts/import-rsvp-invitations.test.mjs",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "predeploy": "npm run build && node -e \"const fs=require('fs'); fs.copyFileSync('CNAME', 'dist/CNAME')\"",
+    "predeploy": "npm run build && node -e \"const fs=require('fs'); fs.copyFileSync('CNAME', 'dist/CNAME'); fs.copyFileSync('dist/index.html', 'dist/404.html')\"",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

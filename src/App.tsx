@@ -1,29 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Navbar } from "./components/Navbar";
 import { Hero } from "./components/Hero";
 import { ScheduleSection } from "./components/ScheduleSection";
 import { RsvpSection } from "./components/RsvpSection";
+import { RsvpPage } from "./components/RsvpPage";
 import { FaqSection } from "./components/FaqSection";
 import { Footer } from "./components/Footer";
 import {
   defaultWeddingDetails,
   defaultSchedules,
 } from "./data/weddingData";
-import { WeddingDetails } from "./types";
 
 export default function App() {
-  const [weddingDetails, setWeddingDetails] = useState<WeddingDetails>(() => {
-    const savedSheetUrl = localStorage.getItem("wedding_google_sheet_url");
-    if (savedSheetUrl) {
-      return { ...defaultWeddingDetails, googleSheetRsvpUrl: savedSheetUrl };
-    }
-    return defaultWeddingDetails;
-  });
-
-  const handleUpdateRsvpUrl = (newUrl: string) => {
-    localStorage.setItem("wedding_google_sheet_url", newUrl);
-    setWeddingDetails((prev) => ({ ...prev, googleSheetRsvpUrl: newUrl }));
-  };
+  const invitationMatch = window.location.pathname.match(/^\/rsvp\/([^/]+)\/?$/);
+  if (window.location.pathname.startsWith("/rsvp")) {
+    return <RsvpPage token={invitationMatch?.[1] ?? ""} />;
+  }
 
   const handleOpenRsvpScroll = () => {
     const rsvpElement = document.getElementById("rsvp");
@@ -37,29 +29,24 @@ export default function App() {
       {/* Navigation Header */}
       <Navbar
         onOpenRsvp={handleOpenRsvpScroll}
-        rsvpUrl={weddingDetails.googleSheetRsvpUrl}
       />
 
       {/* Hero Header with Countdown & Blessing */}
-      <Hero details={weddingDetails} onOpenRsvp={handleOpenRsvpScroll} />
+      <Hero details={defaultWeddingDetails} onOpenRsvp={handleOpenRsvpScroll} />
 
       {/* Main Content Sections */}
       <main className="flex-1">
         {/* 2-Day Schedule (Day 1: Grah Shanti & Pithi; Day 2: Wedding) */}
         <ScheduleSection schedules={defaultSchedules} />
 
-        {/* RSVP Section linking to Google Sheet */}
-        <RsvpSection
-          details={weddingDetails}
-          onUpdateRsvpUrl={handleUpdateRsvpUrl}
-        />
+        <RsvpSection />
 
         {/* Guest FAQs */}
         <FaqSection />
       </main>
 
       {/* Footer */}
-      <Footer details={weddingDetails} onOpenRsvp={handleOpenRsvpScroll} />
+      <Footer details={defaultWeddingDetails} onOpenRsvp={handleOpenRsvpScroll} />
     </div>
   );
 }

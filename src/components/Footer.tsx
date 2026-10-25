@@ -39,7 +39,7 @@ export const Footer: React.FC<FooterProps> = ({ details, onOpenRsvp }) => {
           </a>
           <span className="text-[#D4AF37]">•</span>
           <button onClick={onOpenRsvp} className="hover:text-[#D4AF37] transition-colors underline decoration-[#990000] underline-offset-4 font-bold text-[#FAF9F6]">
-            RSVP (Google Sheet)
+            RSVP
           </button>
         </div>
 
@@ -52,4 +52,3 @@ export const Footer: React.FC<FooterProps> = ({ details, onOpenRsvp }) => {
     </footer>
   );
 };
-

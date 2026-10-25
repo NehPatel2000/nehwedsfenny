@@ -148,7 +148,7 @@ export const Hero: React.FC<HeroProps> = ({ details, onOpenRsvp }) => {
             className="w-full sm:w-auto px-8 py-3.5 rounded-lg font-bold text-xs uppercase tracking-[0.2em] text-[#FAF9F6] bg-[#990000] hover:bg-[#770000] border border-[#D4AF37]/40 shadow-md hover:shadow-lg transition-all transform active:scale-95 flex items-center justify-center gap-2.5"
           >
             <Send className="w-4 h-4" />
-            <span>RSVP via Google Sheet</span>
+            <span>RSVP</span>
           </button>
 
           <a
@@ -170,4 +170,3 @@ export const Hero: React.FC<HeroProps> = ({ details, onOpenRsvp }) => {
     </section>
   );
 };
-
