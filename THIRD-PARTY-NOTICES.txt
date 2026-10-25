@@ -1,12 +1,3 @@
-Peacock emoji artwork
-
-File: peacock-emoji.svg
-Author: Google (Noto Emoji project)
-Source: https://commons.wikimedia.org/wiki/File:Noto_Emoji_v2.034_1f99a.svg
-Upstream source: https://github.com/googlefonts/noto-emoji/tree/v2.034/svg/emoji_u1f99a.svg
-License: Apache License 2.0
-License text: Noto-Emoji-LICENSE.txt
-
 Rose ornament
 
 File: rose-ornament.svg
