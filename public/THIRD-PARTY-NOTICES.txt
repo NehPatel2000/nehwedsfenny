@@ -1,0 +1,7 @@
+Rose ornament
+
+File: rose-ornament.svg
+Author: Anonymous
+Source: https://commons.wikimedia.org/wiki/File:Rose_ornament,_1905.svg
+Description: Rose ornament from a 1905 advertisement.
+License: Public domain

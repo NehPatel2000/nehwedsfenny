@@ -83,17 +83,17 @@ export const RsvpPage: React.FC<RsvpPageProps> = ({ token }) => {
     selected: string[],
     event: 'day1' | 'day2',
   ) => (
-    <fieldset className="rounded-xl border border-[#2D2424]/15 p-4">
+    <fieldset className="rounded-xl border border-[#493A36]/15 p-4">
       <legend className="px-2 font-serif-display text-xl font-bold">{title}</legend>
       <p className="mb-3 text-xs text-stone-500">{date}</p>
       <div className="space-y-2">
         {invitation?.members.map((member) => (
-          <label key={member.id} className="flex cursor-pointer items-center gap-3 rounded-lg bg-white px-3 py-2.5 text-sm">
+          <label key={member.id} className="flex cursor-pointer items-center gap-3 rounded-lg bg-[#FFFDF7] px-3 py-2.5 text-sm">
             <input
               type="checkbox"
               checked={selected.includes(member.id)}
               onChange={() => toggleMember(event, member.id)}
-              className="h-4 w-4 accent-[#990000]"
+              className="h-4 w-4 accent-[#A52A3A]"
             />
             <span>{member.name}</span>
           </label>
@@ -103,15 +103,15 @@ export const RsvpPage: React.FC<RsvpPageProps> = ({ token }) => {
   );
 
   return (
-    <main className="min-h-screen bg-[#FAF6F0] px-4 py-12 text-[#2D2424] sm:py-20">
+    <main className="min-h-screen bg-[#FBF7ED] px-4 py-12 text-[#493A36] sm:py-20">
       <div className="mx-auto max-w-2xl">
-        <a href="/" className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[#990000]">
+        <a href="/" className="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-[#A52A3A]">
           <GaneshIcon className="h-6 w-6" />
           Neh &amp; Fenny
         </a>
-        <section className="rounded-2xl border-2 border-[#D4AF37]/40 bg-[#FAF9F6] p-6 shadow-xl sm:p-10">
+        <section className="rounded-2xl border-2 border-[#92916F]/40 bg-[#FBF7ED] p-6 shadow-xl sm:p-10">
           <header className="mb-6 text-center">
-            <Heart className="mx-auto mb-3 h-7 w-7 fill-[#990000] text-[#990000]" />
+            <Heart className="mx-auto mb-3 h-7 w-7 fill-[#A52A3A] text-[#A52A3A]" />
             <h1 className="font-serif-display text-3xl font-bold sm:text-4xl">Wedding RSVP</h1>
             {invitation && <p className="mt-2 text-stone-600">{invitation.familyName}</p>}
           </header>
@@ -132,7 +132,7 @@ export const RsvpPage: React.FC<RsvpPageProps> = ({ token }) => {
               <button
                 type="button"
                 onClick={() => setSubmitted(false)}
-                className="mt-5 rounded-lg border border-[#990000] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#990000] transition-colors hover:bg-[#990000]/5"
+                className="mt-5 rounded-lg border border-[#A52A3A] px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-[#A52A3A] transition-colors hover:bg-[#A52A3A]/5"
               >
                 Edit reservation
               </button>
@@ -140,15 +140,15 @@ export const RsvpPage: React.FC<RsvpPageProps> = ({ token }) => {
           ) : invitation ? (
             <form onSubmit={submit} className="space-y-5">
               <p className="text-center text-sm text-stone-600">
-                Select who is attending each event. Everyone on your invitation is selected by default.
+                Select who is attending each day. Everyone on your invitation is selected by default.
               </p>
-              {renderEvent('Day 1: Grah Shanti & Pithi', 'Saturday, November 14, 2026', day1, 'day1')}
-              {renderEvent('Day 2: Wedding & Reception', 'Sunday, November 15, 2026', day2, 'day2')}
+              {renderEvent('Day 1: Grah Shanti', 'Friday, June 4, 2027', day1, 'day1')}
+              {renderEvent('Day 2: Wedding', 'Saturday, June 5, 2027', day2, 'day2')}
               {error && <p role="alert" className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
               <button
                 type="submit"
                 disabled={submitting}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#990000] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-md transition-colors hover:bg-[#770000] disabled:cursor-wait disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-[#A52A3A] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-white shadow-md transition-colors hover:bg-[#871F30] disabled:cursor-wait disabled:opacity-60"
               >
                 <Send className="h-4 w-4" />
                 {submitting ? 'Saving RSVP...' : 'Save RSVP'}

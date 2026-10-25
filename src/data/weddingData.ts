@@ -3,8 +3,7 @@ import { DaySchedule, VenueInfo, WeddingDetails } from '../types';
 export const defaultWeddingDetails: WeddingDetails = {
   brideName: "Fenny",
   groomName: "Neh",
-  tagline: "Together with their families, invite you to celebrate their union in love and tradition.",
-  weddingDateIso: "2027-07-04T09:00:00", // Default upcoming wedding date
+  weddingDateIso: "2027-06-05T12:15:00",
   displayDateRange: "Friday, June 4 & Saturday, June 5, 2027",
   primaryLocation: "Bridlewood of Madison, Madison, MS",
 };
@@ -15,7 +14,7 @@ export const defaultVenues: { day1: VenueInfo; day2: VenueInfo } = {
     address: "3024 MS-22",
     city: "Madison, MS 39110",
     googleMapsUrl: "https://www.google.com/maps/place/Bridlewood+of+Madison/@32.5683555,-90.17173,862m/data=!3m2!1e3!4b1!4m6!3m5!1s0x8629c51690047989:0xac5b7cfebfbff463!8m2!3d32.5683555!4d-90.17173!16s%2Fg%2F11fxvfjkmq?entry=ttu&g_ep=EgoyMDI2MDcyNy4wIKXMDSoASAFQAw%3D%3D",
-    description: "An elegant outdoor courtyard for Pithi (Haldi) followed by the grand indoor ballroom for Grah Shanti and Sangeet.",
+    description: "The venue for the Day 1 wedding ceremonies and celebrations.",
     parkingInfo: "Complimentary valet parking available at the main courtyard entrance.",
     hotelInfo: "Group rate available at San Jose Marriott under 'Neh & Fenny Wedding'."
   },
@@ -33,67 +32,99 @@ export const defaultVenues: { day1: VenueInfo; day2: VenueInfo } = {
 export const defaultSchedules: DaySchedule[] = [
   {
     dayNumber: 1,
-    date: "Saturday, November 14, 2026",
-    title: "Day 1: Auspicious Beginnings & Celebration",
-    subtitle: "Grah Shanti, Pithi & Garba",
-    tagline: "Seeking divine peace, turmeric radiance, and evening folk dance festivities.",
+    date: "Friday, June 4, 2027",
+    title: "",
+    subtitle: "Ganesh Sthapana, Mandap Muhurat & Grah Shanti",
+    tagline: "",
     events: [
       {
         id: "d1-e1",
-        time: "09:00 AM - 11:30 AM",
-        title: "Grah Shanti",
-        gujaratiName: "ગ્રહ શાંતિ અને મંડપ મુહૂર્ત",
-        location: "Bridlewood of Madison - Ballroom",
-        description: "A sacred Vedic ceremony invoking Lord Ganesha and nine planets (Navagraha) to seek blessings for peace, harmony, and prosperity before the wedding.",
-        dressCode: "Traditional Indian Attire (Kurtas, Sarees, Salwar Kameez - Soft Pastels or Yellows)",
+        time: "7:30 AM",
+        title: "Ganesh Sthapana",
+        location: "Bridlewood of Madison",
+        description: "Ganesh Sthapana ceremony.",
         iconName: "Sun"
       },
       {
         id: "d1-e2",
-        time: "6:00 PM - 7:00 PM",
-        title: "Pithi (Haldi Ceremony)",
-        gujaratiName: "પીઠી રસમ",
-        location: "Bridlewood of Madison - Courtyard",
-        description: "A joyful ritual where family and friends apply yellow turmeric paste (Pithi) onto the bride and groom for a natural glowing skin and good luck. Be ready for fun and smiles!",
-        dressCode: "Bright Yellows, Saffron, or casual ethnic wear",
+        time: "8:15 AM",
+        title: "Mandap Muhurat",
+        location: "Bridlewood of Madison",
+        description: "Mandap Muhurat ceremony.",
         iconName: "Sparkles"
+      },
+      {
+        id: "d1-e3",
+        time: "9:15 AM",
+        title: "Grah Shanti",
+        location: "Bridlewood of Madison",
+        description: "Grah Shanti ceremony.",
+        iconName: "Sun"
+      },
+      {
+        id: "d1-e4",
+        time: "12:00 PM",
+        title: "Lunch",
+        location: "Bridlewood of Madison",
+        description: "Lunch.",
+        iconName: "Utensils"
+      },
+      {
+        id: "d1-e5",
+        time: "5:30 PM",
+        title: "Haldi",
+        location: "Bridlewood of Madison",
+        description: "Haldi ceremony.",
+        iconName: "Sparkles"
+      },
+      {
+        id: "d1-e6",
+        time: "7:00 PM",
+        title: "Dinner",
+        location: "Bridlewood of Madison",
+        description: "Dinner.",
+        iconName: "Utensils"
       },
     ]
   },
   {
     dayNumber: 2,
-    date: "Sunday, November 15, 2026",
-    title: "Day 2: The Sacred Wedding Day",
-    subtitle: "Lagna Ceremony & Grand Reception",
-    tagline: "The main wedding rituals, Mangal Pheras, Saptapadi, and celebratory evening banquet.",
+    date: "Saturday, June 5, 2027",
+    title: "",
+    subtitle: "Jaan Aagman, Hast Melap & Vidaai",
+    tagline: "",
     events: [
       {
         id: "d2-e1",
-        time: "09:30 AM",
-        title: "Baraat Procession (Groom's Arrival)",
-        gujaratiName: "જાનનું સ્વાગત / વરઘોડો",
-        location: "Main Entrance",
-        description: "Neh arrives in style accompanied by family and friends dancing to dhol drums and upbeat music. Bride's family welcomes the wedding party with dhol and garba!",
-        dressCode: "Formal Indian Regal / Royal Attire (Sherwanis, Lehenga Cholis, Kanjivaram Sarees)",
+        time: "9:15 AM",
+        title: "Jaan Aagman",
+        location: "Bridlewood of Madison",
+        description: "Jaan Aagman.",
         iconName: "Flame"
       },
       {
-        id: "d2-e3",
-        time: "10:45 AM - 01:15 PM",
-        title: "Wedding Ceremony (Lagna)",
-        gujaratiName: "હસ્ત મેળાપ અને મંગળ ફેરા",
-        location: "Bridlewood of Madison - Ballroom",
-        description: "The core Hindu ceremony featuring Ganesh Puja, Kanyadaan (giving away of bride), Hast Melap (joining of hands), Mangal Pheras (4 circles around sacred fire), and Saptapadi (7 Vows).",
+        id: "d2-e2",
+        time: "12:15 PM",
+        title: "Hast Melap",
+        location: "Bridlewood of Madison",
+        description: "Hast Melap ceremony.",
         iconName: "Sun"
       },
       {
-        id: "d2-e4",
-        time: "12:30 PM - 01:00 PM",
-        title: "Wedding Mahaprasad Lunch",
-        gujaratiName: "લગ્ન ભોજન",
-        location: "Bridlewood of Madison - Ballroom",
-        description: "A rich celebratory Indian lunch spread for all wedding guests.",
+        id: "d2-e3",
+        time: "12:30 PM",
+        title: "Lunch",
+        location: "Bridlewood of Madison",
+        description: "Lunch.",
         iconName: "Utensils"
+      },
+      {
+        id: "d2-e4",
+        time: "3:00 PM",
+        title: "Vidaai",
+        location: "Bridlewood of Madison",
+        description: "Vidaai.",
+        iconName: "Heart"
       },
     ]
   }
@@ -102,18 +133,18 @@ export const defaultSchedules: DaySchedule[] = [
 export const guestFaqs = [
   {
     question: "What should I wear to the Gujarati wedding ceremonies?",
-    answer: "Bright, joyful colors are highly encouraged! For Day 1 (Pithi), wear shades of yellow, saffron, or green. For Garba, colorful traditional clothes like Chaniya Choli or Kurta Pajamas. For Day 2 (Wedding), formal Indian ethnic wear like Sherwani, Kurta, Sarees, or Lehengas. *Cultural tip:* It is customary to avoid plain solid white or solid black during auspicious religious pujas."
+    answer: "Please wear attire appropriate for the wedding ceremonies. No specific dress code has been provided."
   },
   {
     question: "Is the food vegetarian?",
     answer: "Yes! In traditional Gujarati Hindu custom, all meals throughout the 2-day celebration will be 100% vegetarian, delicious, and cooked fresh. Jain and vegan options will also be clearly labeled."
   },
   {
-    question: "Do I need to know how to do Garba?",
-    answer: "Not at all! Garba is friendly, repetitive, and super easy to learn on the spot. Just jump into the outer circle and follow the rhythm of the person in front of you."
+    question: "What events are planned?",
+    answer: "Please see the schedule for the listed ceremonies and meals."
   },
   {
     question: "How do I submit my RSVP?",
-    answer: "Click the 'RSVP' button anywhere on this page and submit the form. Please RSVP by October 1st, 2026."
+    answer: "Click the 'RSVP' button anywhere on this page and submit the form."
   }
 ];

@@ -14,22 +14,22 @@
 
 body {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-  background-color: #FAF9F6;
-  color: #2D2424;
+  background-color: #FBF7ED;
+  color: #493A36;
 }
 
-/* Modern Editorial Gold Line & Border Utilities */
+/* Muted sage line and border utilities */
 .border-gold-subtle {
-  border-color: rgba(212, 175, 55, 0.35);
+  border-color: rgba(146, 145, 111, 0.35);
 }
 
 .border-gold-gradient {
-  border-image: linear-gradient(to right, #D4AF37, #990000, #D4AF37) 1;
+  border-image: linear-gradient(to right, #92916F, #A52A3A, #92916F) 1;
 }
 
 /* Subtle Geometric Background Watermark */
 .bg-editorial-grid {
-  background-image: radial-gradient(rgba(153, 0, 0, 0.05) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(165, 42, 58, 0.05) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -38,13 +38,12 @@ body {
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #FAF9F6;
+  background: #FBF7ED;
 }
 ::-webkit-scrollbar-thumb {
-  background: #990000;
+  background: #A52A3A;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #770000;
+  background: #871F30;
 }
-

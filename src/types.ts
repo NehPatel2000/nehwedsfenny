@@ -42,7 +42,6 @@ export interface TraditionInfo {
 export interface WeddingDetails {
   brideName: string;
   groomName: string;
-  tagline: string;
   weddingDateIso: string; // ISO format for countdown timer
   displayDateRange: string;
   primaryLocation: string;
@@ -51,8 +50,8 @@ export interface WeddingDetails {
 export interface RsvpResponse {
   guestName: string;
   email: string;
-  attendingDay1: boolean; // Grah Shanti & Pithi
-  attendingDay2: boolean; // Wedding Ceremony & Reception
+  attendingDay1: boolean;
+  attendingDay2: boolean;
   dietaryRestrictions: string;
   guestCount: number;
   messageToCouple: string;
