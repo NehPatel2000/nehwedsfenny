@@ -1,12 +1,17 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 
-const jsonResponse = (statusCode, body) => ({
+const jsonResponse = (statusCode, body, headers = {}) => ({
   statusCode,
-  headers: { 'content-type': 'application/json' },
+  headers: { 'content-type': 'application/json', ...headers },
   body: JSON.stringify(body),
 });
 
 const invitationKey = (token) => ({
+  tokenHash: { S: createHash('sha256').update(token).digest('hex') },
+});
+
+const createRsvpToken = () => randomBytes(32).toString('hex');
+const publicRsvpKey = (token) => ({
   tokenHash: { S: createHash('sha256').update(token).digest('hex') },
 });
 
@@ -53,12 +58,261 @@ export const validateRsvp = (value, members) => {
   return { value: { attendingDay1: value.attendingDay1, attendingDay2: value.attendingDay2 } };
 };
 
+const isAttendanceValid = (attending, people) =>
+  typeof attending === 'boolean'
+  && Number.isSafeInteger(people)
+  && people >= 0
+  && (attending ? people > 0 : people === 0);
+
+const validateAttendanceFields = (value) => {
+  const fields = [
+    ['grahShantiAttending', 'grahShantiPeople'],
+    ['pithiAttending', 'pithiPeople'],
+    ['weddingAttending', 'weddingPeople'],
+  ];
+  if (fields.some(([attending, people]) => !isAttendanceValid(value[attending], value[people]))) {
+    return { error: 'For each event, enter a valid attendance choice and guest count.' };
+  }
+  return {
+    value: Object.fromEntries(fields.flatMap(([attending, people]) => [
+      [attending, value[attending]],
+      [people, value[people]],
+    ])),
+  };
+};
+
+const isValidEmail = (email) => {
+  if (email.length > 254) return false;
+  const [local, domain, ...extra] = email.split('@');
+  if (!local || !domain || extra.length > 0 || local.length > 64 || local.startsWith('.') || local.endsWith('.') || local.includes('..')) {
+    return false;
+  }
+  if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+  const labels = domain.split('.');
+  if (labels.length < 2) return false;
+  if (labels.some((label) => (
+    label.length === 0
+    || label.length > 63
+    || !/^[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?$/.test(label)
+  ))) return false;
+  return /^[A-Za-z]{2,63}$/.test(labels.at(-1));
+};
+
+const isValidUsPhone = (phone) => {
+  return /^(?:\+?1[ .-]?)?(?:\([2-9](?!11)[0-9]{2}\)|[2-9](?!11)[0-9]{2})[ .-]?[2-9](?!11)[0-9]{2}[ .-]?[0-9]{4}$/.test(phone);
+};
+
+export const validatePublicRsvp = (value) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { error: 'Request body must be a JSON object.' };
+  }
+  if (typeof value.displayName !== 'string' || value.displayName.trim().length === 0 || value.displayName.trim().length > 100) {
+    return { error: 'Enter a display name between 1 and 100 characters.' };
+  }
+  const attendance = validateAttendanceFields(value);
+  if (attendance.error) return attendance;
+  return { value: { displayName: value.displayName.trim(), ...attendance.value } };
+};
+
+export const validateSeedRsvp = (value) => {
+  const publicRsvp = validatePublicRsvp(value);
+  if (publicRsvp.error) return publicRsvp;
+  if (typeof value.internalName !== 'string' || value.internalName.trim().length > 100) {
+    return { error: 'Internal name must be 100 characters or fewer.' };
+  }
+  const phone = value.phone === undefined ? '' : value.phone;
+  const email = value.email === undefined ? '' : value.email;
+  if (typeof phone !== 'string' || phone.trim().length > 40 || (phone.trim() !== '' && !isValidUsPhone(phone.trim()))) {
+    return { error: 'Enter a valid 10-digit U.S. phone number.' };
+  }
+  if (
+    typeof email !== 'string'
+    || (email.trim() !== '' && !isValidEmail(email.trim()))
+  ) {
+    return { error: 'Enter a valid email address up to 254 characters long.' };
+  }
+  if (value.side !== 'bride' && value.side !== 'groom') {
+    return { error: 'Choose either the bride or groom side.' };
+  }
+  return {
+    value: {
+      ...publicRsvp.value,
+      internalName: value.internalName.trim(),
+      phone: phone.trim(),
+      email: email.trim(),
+      side: value.side,
+    },
+  };
+};
+
+const parseRequestBody = (event) => {
+  if (typeof event.body !== 'string' || Buffer.byteLength(event.body, 'utf8') > 8192) {
+    return { error: 'Request body is missing or too large.' };
+  }
+  try {
+    const text = event.isBase64Encoded
+      ? Buffer.from(event.body, 'base64').toString('utf8')
+      : event.body;
+    return { value: JSON.parse(text) };
+  } catch {
+    return { error: 'Request body must contain valid JSON.' };
+  }
+};
+
+const hasValidAdminCredentials = (authorization) => {
+  const expectedUsername = process.env.ADMIN_USERNAME;
+  const expectedPassword = process.env.ADMIN_PASSWORD;
+  if (!expectedUsername || !expectedPassword) return null;
+  if (typeof authorization !== 'string' || !authorization.startsWith('Basic ')) return false;
+
+  let decoded;
+  try {
+    decoded = Buffer.from(authorization.slice(6), 'base64').toString('utf8');
+  } catch {
+    return false;
+  }
+  const separator = decoded.indexOf(':');
+  if (separator < 0) return false;
+  const username = decoded.slice(0, separator);
+  const password = decoded.slice(separator + 1);
+  const expected = createHash('sha256').update(`${expectedUsername}:${expectedPassword}`).digest();
+  const actual = createHash('sha256').update(`${username}:${password}`).digest();
+  return timingSafeEqual(actual, expected);
+};
+
+const readStoredValue = (item, attribute, type) => item?.[attribute]?.[type];
+
+const listAdminRsvps = async (client, ScanCommand, tableName) => {
+  const rsvps = [];
+  let lastEvaluatedKey;
+  do {
+    const result = await client.send(new ScanCommand({
+      TableName: tableName,
+      FilterExpression: '#recordType = :recordType',
+      ProjectionExpression: '#displayName, #internalName, #phone, #email, #side, #shareToken, #grahShantiAttending, #grahShantiPeople, #pithiAttending, #pithiPeople, #weddingAttending, #weddingPeople, #updatedAt',
+      ExpressionAttributeNames: {
+        '#recordType': 'recordType',
+        '#displayName': 'displayName',
+        '#internalName': 'internalName',
+        '#phone': 'phone',
+        '#email': 'email',
+        '#side': 'side',
+        '#shareToken': 'shareToken',
+        '#grahShantiAttending': 'grahShantiAttending',
+        '#grahShantiPeople': 'grahShantiPeople',
+        '#pithiAttending': 'pithiAttending',
+        '#pithiPeople': 'pithiPeople',
+        '#weddingAttending': 'weddingAttending',
+        '#weddingPeople': 'weddingPeople',
+        '#updatedAt': 'updatedAt',
+      },
+      ExpressionAttributeValues: { ':recordType': { S: 'public-rsvp' } },
+      ExclusiveStartKey: lastEvaluatedKey,
+    }));
+    for (const item of result.Items ?? []) {
+      const displayName = readStoredValue(item, 'displayName', 'S');
+      const updatedAt = readStoredValue(item, 'updatedAt', 'S');
+      if (typeof displayName === 'string' && typeof updatedAt === 'string') {
+        rsvps.push({
+          displayName,
+          internalName: readStoredValue(item, 'internalName', 'S') ?? '',
+          phone: readStoredValue(item, 'phone', 'S') ?? '',
+          email: readStoredValue(item, 'email', 'S') ?? '',
+          side: readStoredValue(item, 'side', 'S') ?? 'unassigned',
+          shareToken: readStoredValue(item, 'shareToken', 'S') ?? '',
+          grahShantiAttending: readStoredValue(item, 'grahShantiAttending', 'BOOL') === true,
+          grahShantiPeople: readStoredValue(item, 'grahShantiPeople', 'N') ? Number(item.grahShantiPeople.N) : 0,
+          pithiAttending: readStoredValue(item, 'pithiAttending', 'BOOL') === true,
+          pithiPeople: readStoredValue(item, 'pithiPeople', 'N') ? Number(item.pithiPeople.N) : 0,
+          weddingAttending: readStoredValue(item, 'weddingAttending', 'BOOL') === true,
+          weddingPeople: readStoredValue(item, 'weddingPeople', 'N') ? Number(item.weddingPeople.N) : 0,
+          updatedAt,
+        });
+      }
+    }
+    lastEvaluatedKey = result.LastEvaluatedKey;
+  } while (lastEvaluatedKey);
+  return rsvps.sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+};
+
+const rsvpAttributes = (value) => {
+  const attributes = {};
+  for (const [key, fieldType] of [
+    ['grahShantiAttending', 'BOOL'],
+    ['grahShantiPeople', 'N'],
+    ['pithiAttending', 'BOOL'],
+    ['pithiPeople', 'N'],
+    ['weddingAttending', 'BOOL'],
+    ['weddingPeople', 'N'],
+  ]) {
+    attributes[key] = { [fieldType]: fieldType === 'N' ? String(value[key]) : value[key] };
+  }
+  return attributes;
+};
+
+const storeAdminRsvp = async (client, PutItemCommand, tableName, value) => {
+  const token = createRsvpToken();
+  const item = {
+    ...publicRsvpKey(token),
+    recordType: { S: 'public-rsvp' },
+    displayName: { S: value.displayName },
+    internalName: { S: value.internalName },
+    ...(value.phone ? { phone: { S: value.phone } } : {}),
+    ...(value.email ? { email: { S: value.email } } : {}),
+    side: { S: value.side },
+    shareToken: { S: token },
+    updatedAt: { S: new Date().toISOString() },
+    ...rsvpAttributes(value),
+  };
+  await client.send(new PutItemCommand({ TableName: tableName, Item: item }));
+  return token;
+};
+
+const storePublicRsvp = async (client, PutItemCommand, tableName, value) => {
+  const token = createRsvpToken();
+  const item = {
+    ...publicRsvpKey(token),
+    recordType: { S: 'public-rsvp' },
+    displayName: { S: value.displayName },
+    side: { S: 'unassigned' },
+    shareToken: { S: token },
+    updatedAt: { S: new Date().toISOString() },
+    ...rsvpAttributes(value),
+  };
+  await client.send(new PutItemCommand({ TableName: tableName, Item: item }));
+  return token;
+};
+
 export const handler = async (event) => {
   const method = event?.requestContext?.http?.method;
-  const match = /^\/rsvp\/([A-Za-z0-9_-]{10})\/?$/.exec(event?.rawPath ?? '');
-  if (!match) return jsonResponse(404, { error: 'Invitation not found.' });
-  if (method !== 'GET' && method !== 'POST') {
+  const path = event?.rawPath ?? '';
+  const publicRsvpPath = /^\/rsvp\/?$/.test(path);
+  const adminRsvpsPath = /^\/admin\/rsvps\/?$/.test(path);
+  const publicTokenMatch = /^\/rsvp\/([a-f0-9]{64})\/?$/.exec(path);
+  const invitationMatch = /^\/rsvp\/([A-Za-z0-9_-]{10})\/?$/.exec(path);
+
+  if (!publicRsvpPath && !adminRsvpsPath && !publicTokenMatch && !invitationMatch) {
+    return jsonResponse(404, { error: 'Endpoint not found.' });
+  }
+  if (publicRsvpPath && method !== 'POST') {
     return jsonResponse(405, { error: 'Method not allowed.' });
+  }
+  if (adminRsvpsPath && method !== 'GET' && method !== 'POST') {
+    return jsonResponse(405, { error: 'Method not allowed.' });
+  }
+  if ((publicTokenMatch || invitationMatch) && method !== 'GET' && method !== 'POST') {
+    return jsonResponse(405, { error: 'Method not allowed.' });
+  }
+
+  if (adminRsvpsPath) {
+    const credentialsValid = hasValidAdminCredentials(event.headers?.authorization ?? event.headers?.Authorization);
+    if (credentialsValid === null) {
+      console.error('ADMIN_USERNAME or ADMIN_PASSWORD is not configured');
+      return jsonResponse(500, { error: 'Admin access is not configured.' });
+    }
+    if (!credentialsValid) {
+      return jsonResponse(401, { error: 'Unauthorized.' }, { 'www-authenticate': 'Basic realm="Wedding RSVP Admin"' });
+    }
   }
 
   const tableName = process.env.RSVP_TABLE_NAME;
@@ -67,10 +321,69 @@ export const handler = async (event) => {
     return jsonResponse(500, { error: 'RSVP service is not configured.' });
   }
 
-  const token = match[1];
   try {
-    const { DynamoDBClient, GetItemCommand, UpdateItemCommand } = await import('@aws-sdk/client-dynamodb');
+    const { DynamoDBClient, GetItemCommand, UpdateItemCommand, PutItemCommand, ScanCommand } = await import('@aws-sdk/client-dynamodb');
     const client = new DynamoDBClient({});
+    if (publicRsvpPath) {
+      const body = parseRequestBody(event);
+      if (body.error) return jsonResponse(400, { error: body.error });
+      const result = validatePublicRsvp(body.value);
+      if (result.error) return jsonResponse(400, { error: result.error });
+      const token = await storePublicRsvp(client, PutItemCommand, tableName, result.value);
+      return jsonResponse(201, { message: 'RSVP saved successfully.', token });
+    }
+
+    if (publicTokenMatch) {
+      const token = publicTokenMatch[1];
+      const key = publicRsvpKey(token);
+      const { Item } = await client.send(new GetItemCommand({ TableName: tableName, Key: key }));
+      if (Item?.recordType?.S !== 'public-rsvp') return jsonResponse(404, { error: 'RSVP link not found.' });
+
+      if (method === 'GET') {
+        return jsonResponse(200, {
+          displayName: readStoredValue(Item, 'displayName', 'S') ?? '',
+          ...Object.fromEntries(Object.entries(rsvpAttributes({
+            grahShantiAttending: readStoredValue(Item, 'grahShantiAttending', 'BOOL') === true,
+            grahShantiPeople: Number(readStoredValue(Item, 'grahShantiPeople', 'N') ?? 0),
+            pithiAttending: readStoredValue(Item, 'pithiAttending', 'BOOL') === true,
+            pithiPeople: Number(readStoredValue(Item, 'pithiPeople', 'N') ?? 0),
+            weddingAttending: readStoredValue(Item, 'weddingAttending', 'BOOL') === true,
+            weddingPeople: Number(readStoredValue(Item, 'weddingPeople', 'N') ?? 0),
+          })).map(([name, attribute]) => [name, attribute.BOOL ?? Number(attribute.N)])),
+        });
+      }
+
+      const body = parseRequestBody(event);
+      if (body.error) return jsonResponse(400, { error: body.error });
+      const result = validatePublicRsvp(body.value);
+      if (result.error) return jsonResponse(400, { error: result.error });
+      await client.send(new UpdateItemCommand({
+        TableName: tableName,
+        Key: key,
+        UpdateExpression: 'SET displayName = :displayName, grahShantiAttending = :grahShantiAttending, grahShantiPeople = :grahShantiPeople, pithiAttending = :pithiAttending, pithiPeople = :pithiPeople, weddingAttending = :weddingAttending, weddingPeople = :weddingPeople, updatedAt = :updatedAt',
+        ExpressionAttributeValues: {
+          ':displayName': { S: result.value.displayName },
+          ...Object.fromEntries(Object.entries(rsvpAttributes(result.value)).map(([name, attribute]) => [`:${name}`, attribute])),
+          ':updatedAt': { S: new Date().toISOString() },
+        },
+      }));
+      return jsonResponse(200, { message: 'RSVP saved successfully.', token });
+    }
+
+    if (adminRsvpsPath) {
+      if (method === 'GET') {
+        const rsvps = await listAdminRsvps(client, ScanCommand, tableName);
+        return jsonResponse(200, { rsvps });
+      }
+      const body = parseRequestBody(event);
+      if (body.error) return jsonResponse(400, { error: body.error });
+      const result = validateSeedRsvp(body.value);
+      if (result.error) return jsonResponse(400, { error: result.error });
+      const token = await storeAdminRsvp(client, PutItemCommand, tableName, result.value);
+      return jsonResponse(201, { message: 'Internal RSVP added successfully.', token });
+    }
+
+    const token = invitationMatch[1];
     const key = invitationKey(token);
     const { Item } = await client.send(new GetItemCommand({ TableName: tableName, Key: key }));
     const invitation = parseInvitation(Item);
@@ -80,21 +393,9 @@ export const handler = async (event) => {
       return jsonResponse(200, invitation);
     }
 
-    if (typeof event.body !== 'string' || Buffer.byteLength(event.body, 'utf8') > 8192) {
-      return jsonResponse(400, { error: 'Request body is missing or too large.' });
-    }
-
-    let body;
-    try {
-      const text = event.isBase64Encoded
-        ? Buffer.from(event.body, 'base64').toString('utf8')
-        : event.body;
-      body = JSON.parse(text);
-    } catch {
-      return jsonResponse(400, { error: 'Request body must contain valid JSON.' });
-    }
-
-    const result = validateRsvp(body, invitation.members);
+    const body = parseRequestBody(event);
+    if (body.error) return jsonResponse(400, { error: body.error });
+    const result = validateRsvp(body.value, invitation.members);
     if (result.error) return jsonResponse(400, { error: result.error });
 
     await client.send(new UpdateItemCommand({
@@ -108,7 +409,7 @@ export const handler = async (event) => {
       },
     }));
   } catch (error) {
-    console.error('Failed to read or save invitation in DynamoDB', error);
+    console.error('Failed to process RSVP request in DynamoDB', error);
     return jsonResponse(500, { error: 'We could not load or save your RSVP. Please try again.' });
   }
 

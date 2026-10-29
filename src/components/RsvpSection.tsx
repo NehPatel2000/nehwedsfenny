@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { Heart, Send } from 'lucide-react';
 import { GaneshIcon } from './GaneshIcon';
 
 export const RsvpSection: React.FC = () => (
@@ -17,8 +17,15 @@ export const RsvpSection: React.FC = () => (
           RSVP For The Wedding
         </h2>
         <p className="mt-4 text-[#675A53] text-sm leading-relaxed">
-          Your invitation includes a private RSVP link for your family. Open that link to see your invited guests and choose who will attend each event.
+          Tell us which celebrations you will attend and how many people are coming.
         </p>
+        <a
+          href="/rsvp"
+          className="mt-7 inline-flex items-center gap-2 rounded-lg bg-[#A52A3A] px-6 py-3 text-xs font-bold uppercase tracking-[0.18em] text-white shadow-sm transition-colors hover:bg-[#871F30]"
+        >
+          <Send className="h-4 w-4" />
+          Submit your RSVP
+        </a>
       </div>
     </div>
   </section>
