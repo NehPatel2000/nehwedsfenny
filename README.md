@@ -14,9 +14,9 @@ The celebration spans two days and includes Grah Shanti, Haldi, and the wedding 
 
 ## RSVP
 
-[Submit your RSVP](https://www.nehwedsfenny.com/rsvp) to let us know which events you plan to attend and how many people will be joining you. Please include yourself in each guest count.
+RSVP using the personal link shared with your invitation to let us know which events you plan to attend and how many people will be joining you. Please include yourself in each guest count. If you need your link, please contact us.
 
-After submitting, you’ll receive a personal link to review or update your response. Keep that link private so only you or your household can access it.
+Your invitation’s personal link lets you submit, review, or update your response. Keep that link private so only you or your household can access it.
 
 ## Visit the website
 

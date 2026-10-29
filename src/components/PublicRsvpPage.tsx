@@ -79,11 +79,9 @@ export const PublicRsvpPage: React.FC<PublicRsvpPageProps> = ({ token: initialTo
     setSubmitting(true);
     setError('');
     try {
+      if (!rsvpToken) throw new Error('Use the personal RSVP link shared with your invitation.');
       if (!apiUrl) throw new Error('RSVP service is not configured.');
-      const endpoint = rsvpToken
-        ? `${apiUrl.replace(/\/+$/, '')}/rsvp/${encodeURIComponent(rsvpToken)}`
-        : `${apiUrl.replace(/\/+$/, '')}/rsvp`;
-      const response = await fetch(endpoint, {
+      const response = await fetch(`${apiUrl.replace(/\/+$/, '')}/rsvp/${encodeURIComponent(rsvpToken)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -157,7 +155,11 @@ export const PublicRsvpPage: React.FC<PublicRsvpPageProps> = ({ token: initialTo
             <Heart className="mx-auto mb-3 h-7 w-7 fill-[#A52A3A] text-[#A52A3A]" />
             <h1 className="font-serif-display text-3xl font-bold sm:text-4xl">Wedding RSVP</h1>
           </header>
-          {loading ? (
+          {!initialToken ? (
+            <p className="py-8 text-center text-sm leading-relaxed text-stone-600">
+              RSVP using the personal link shared with your invitation.
+            </p>
+          ) : loading ? (
             <p className="flex items-center justify-center gap-2 py-10 text-sm text-stone-600">
               <LoaderCircle className="h-4 w-4 animate-spin" /> Loading your RSVP...
             </p>

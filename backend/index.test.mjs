@@ -137,6 +137,24 @@ describe('validateSeedRsvp', () => {
 });
 
 describe('handler', () => {
+  it('does not allow RSVP creation without a seeded personal link', async () => {
+    const response = await handler({
+      rawPath: '/rsvp',
+      body: JSON.stringify({
+        displayName: 'Guest',
+        grahShantiAttending: false,
+        grahShantiPeople: 0,
+        pithiAttending: false,
+        pithiPeople: 0,
+        weddingAttending: false,
+        weddingPeople: 0,
+      }),
+      requestContext: { http: { method: 'POST' } },
+    });
+    assert.equal(response.statusCode, 403);
+    assert.match(response.body, /personal link shared with your invitation/);
+  });
+
   it('rejects paths that do not contain a full opaque invitation token', async () => {
     const response = await handler({
       rawPath: '/rsvp/not-a-token',

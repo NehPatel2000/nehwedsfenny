@@ -268,21 +268,6 @@ const storeAdminRsvp = async (client, PutItemCommand, tableName, value) => {
   return token;
 };
 
-const storePublicRsvp = async (client, PutItemCommand, tableName, value) => {
-  const token = createRsvpToken();
-  const item = {
-    ...publicRsvpKey(token),
-    recordType: { S: 'public-rsvp' },
-    displayName: { S: value.displayName },
-    side: { S: 'unassigned' },
-    shareToken: { S: token },
-    updatedAt: { S: new Date().toISOString() },
-    ...rsvpAttributes(value),
-  };
-  await client.send(new PutItemCommand({ TableName: tableName, Item: item }));
-  return token;
-};
-
 export const handler = async (event) => {
   const method = event?.requestContext?.http?.method;
   const path = event?.rawPath ?? '';
@@ -291,11 +276,12 @@ export const handler = async (event) => {
   const publicTokenMatch = /^\/rsvp\/([a-f0-9]{64})\/?$/.exec(path);
   const invitationMatch = /^\/rsvp\/([A-Za-z0-9_-]{10})\/?$/.exec(path);
 
-  if (!publicRsvpPath && !adminRsvpsPath && !publicTokenMatch && !invitationMatch) {
-    return jsonResponse(404, { error: 'Endpoint not found.' });
+  if (publicRsvpPath) {
+    return jsonResponse(403, { error: 'RSVPs require the personal link shared with your invitation.' });
   }
-  if (publicRsvpPath && method !== 'POST') {
-    return jsonResponse(405, { error: 'Method not allowed.' });
+
+  if (!adminRsvpsPath && !publicTokenMatch && !invitationMatch) {
+    return jsonResponse(404, { error: 'Endpoint not found.' });
   }
   if (adminRsvpsPath && method !== 'GET' && method !== 'POST') {
     return jsonResponse(405, { error: 'Method not allowed.' });
@@ -324,15 +310,6 @@ export const handler = async (event) => {
   try {
     const { DynamoDBClient, GetItemCommand, UpdateItemCommand, PutItemCommand, ScanCommand } = await import('@aws-sdk/client-dynamodb');
     const client = new DynamoDBClient({});
-    if (publicRsvpPath) {
-      const body = parseRequestBody(event);
-      if (body.error) return jsonResponse(400, { error: body.error });
-      const result = validatePublicRsvp(body.value);
-      if (result.error) return jsonResponse(400, { error: result.error });
-      const token = await storePublicRsvp(client, PutItemCommand, tableName, result.value);
-      return jsonResponse(201, { message: 'RSVP saved successfully.', token });
-    }
-
     if (publicTokenMatch) {
       const token = publicTokenMatch[1];
       const key = publicRsvpKey(token);
