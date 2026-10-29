@@ -21,6 +21,10 @@ const initialForm: RsvpForm = {
   wedding: { attending: false, people: 1 },
 };
 
+const getPersonalRsvpPath = (token: string) => token.length === 10
+  ? `/rsvp/guest/${token}`
+  : `/rsvp/${token}`;
+
 interface PublicRsvpPageProps {
   token?: string;
 }
@@ -39,7 +43,7 @@ export const PublicRsvpPage: React.FC<PublicRsvpPageProps> = ({ token: initialTo
     const loadRsvp = async () => {
       try {
         if (!apiUrl) throw new Error('RSVP service is not configured.');
-        const response = await fetch(`${apiUrl.replace(/\/+$/, '')}/rsvp/${encodeURIComponent(initialToken)}`);
+        const response = await fetch(`${apiUrl.replace(/\/+$/, '')}${getPersonalRsvpPath(encodeURIComponent(initialToken))}`);
         if (!response.ok) {
           const result = await response.json().catch(() => null) as { error?: string } | null;
           throw new Error(result?.error ?? 'Could not load this RSVP link.');
@@ -81,7 +85,7 @@ export const PublicRsvpPage: React.FC<PublicRsvpPageProps> = ({ token: initialTo
     try {
       if (!rsvpToken) throw new Error('Use the personal RSVP link shared with your invitation.');
       if (!apiUrl) throw new Error('RSVP service is not configured.');
-      const response = await fetch(`${apiUrl.replace(/\/+$/, '')}/rsvp/${encodeURIComponent(rsvpToken)}`, {
+      const response = await fetch(`${apiUrl.replace(/\/+$/, '')}${getPersonalRsvpPath(encodeURIComponent(rsvpToken))}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -172,14 +176,14 @@ export const PublicRsvpPage: React.FC<PublicRsvpPageProps> = ({ token: initialTo
                 <div className="mx-auto mt-5 max-w-lg rounded-lg bg-white p-4 text-left">
                   <p className="text-sm font-semibold">Your personal RSVP link</p>
                   <a
-                    href={`${window.location.origin}/rsvp/${rsvpToken}`}
+                    href={`${window.location.origin}${getPersonalRsvpPath(rsvpToken)}`}
                     className="mt-1 block break-all text-sm text-[#A52A3A] underline"
                   >
-                    {`${window.location.origin}/rsvp/${rsvpToken}`}
+                    {`${window.location.origin}${getPersonalRsvpPath(rsvpToken)}`}
                   </a>
                   <p className="mt-2 text-xs text-stone-500">Keep this link to update your RSVP later.</p>
                   <div className="mt-4 flex justify-center">
-                    <PersonalRsvpQrCode url={`${window.location.origin}/rsvp/${rsvpToken}`} />
+                    <PersonalRsvpQrCode url={`${window.location.origin}${getPersonalRsvpPath(rsvpToken)}`} />
                   </div>
                 </div>
               )}

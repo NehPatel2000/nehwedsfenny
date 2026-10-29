@@ -37,6 +37,9 @@ type SeedRsvpForm = {
 const apiUrl = import.meta.env.VITE_RSVP_API_URL;
 const usPhonePattern = /^(?:\+?1[ .-]?)?(?:\([2-9](?!11)[0-9]{2}\)|[2-9](?!11)[0-9]{2})[ .-]?[2-9](?!11)[0-9]{2}[ .-]?[0-9]{4}$/;
 const isValidUsPhone = (phone: string) => phone.trim() === '' || usPhonePattern.test(phone.trim());
+const getPersonalRsvpPath = (token: string) => token.length === 10
+  ? `/rsvp/guest/${token}`
+  : `/rsvp/${token}`;
 const initialSeedForm: SeedRsvpForm = {
   displayName: '',
   internalName: '',
@@ -65,6 +68,7 @@ export const AdminPage: React.FC = () => {
   const [error, setError] = useState('');
   const [seedForm, setSeedForm] = useState<SeedRsvpForm>(initialSeedForm);
   const [seedMessage, setSeedMessage] = useState('');
+  const [linkMessage, setLinkMessage] = useState('');
   const [phoneError, setPhoneError] = useState('');
 
   const loadRsvps = async (credential: string) => {
@@ -104,6 +108,30 @@ export const AdminPage: React.FC = () => {
     setPassword('');
     setSeedForm(initialSeedForm);
     setSeedMessage('');
+    setLinkMessage('');
+  };
+
+  const shortenRsvpLink = async (token: string) => {
+    setError('');
+    setLinkMessage('');
+    setLoading(true);
+    try {
+      if (!apiUrl) throw new Error('RSVP service is not configured.');
+      const response = await fetch(`${apiUrl.replace(/\/+$/, '')}/admin/rsvps/${encodeURIComponent(token)}/short-link`, {
+        method: 'POST',
+        headers: { Authorization: authorization },
+      });
+      if (!response.ok) {
+        const result = await response.json().catch(() => null) as { error?: string } | null;
+        throw new Error(result?.error ?? 'Could not create a shorter RSVP link.');
+      }
+      setLinkMessage('A shorter personal RSVP link is ready.');
+      await loadRsvps(authorization);
+    } catch (shortenError) {
+      setError(shortenError instanceof Error ? shortenError.message : 'Could not create a shorter RSVP link.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const submitSeed = async (event: React.FormEvent) => {
@@ -243,6 +271,7 @@ export const AdminPage: React.FC = () => {
             </form>
           )}
           {error && <p role="alert" className="mt-5 rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
+          {linkMessage && <p role="status" className="mt-5 text-sm text-emerald-800">{linkMessage}</p>}
           {authorization && rsvps && (
             <>
             <form onSubmit={submitSeed} className="mb-8 rounded-xl border border-[#92916F]/40 bg-[#FBF7ED] p-5">
@@ -362,19 +391,29 @@ export const AdminPage: React.FC = () => {
                         {rsvp.shareToken ? (
                           <>
                             <a
-                              href={`${window.location.origin}/rsvp/${rsvp.shareToken}`}
+                              href={`${window.location.origin}${getPersonalRsvpPath(rsvp.shareToken)}`}
                               target="_blank"
                               rel="noreferrer"
                               className="break-all text-[#A52A3A] underline"
                             >
-                              {`${window.location.origin}/rsvp/${rsvp.shareToken}`}
+                              {`${window.location.origin}${getPersonalRsvpPath(rsvp.shareToken)}`}
                             </a>
+                            {rsvp.shareToken.length === 64 && (
+                              <button
+                                type="button"
+                                disabled={loading}
+                                onClick={() => void shortenRsvpLink(rsvp.shareToken)}
+                                className="mt-2 block text-xs font-semibold text-[#A52A3A] underline disabled:opacity-60"
+                              >
+                                Create shorter 10-character link
+                              </button>
+                            )}
                           </>
                         ) : 'Not available'}
                       </td>
                       <td className="px-3 py-4">
                         {rsvp.shareToken
-                          ? <div className="w-24"><PersonalRsvpQrCode url={`${window.location.origin}/rsvp/${rsvp.shareToken}`} size={96} /></div>
+                          ? <div className="w-24"><PersonalRsvpQrCode url={`${window.location.origin}${getPersonalRsvpPath(rsvp.shareToken)}`} size={96} /></div>
                           : 'Not available'}
                       </td>
                       <td className="px-3 py-4">{rsvp.phone || '—'}</td>

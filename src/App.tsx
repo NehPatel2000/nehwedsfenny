@@ -17,7 +17,8 @@ export default function App() {
   const pathname = window.location.pathname.replace(/\/+$/, "") || "/";
   if (pathname === "/admin") return <AdminPage />;
   if (pathname === "/rsvp") return <PublicRsvpPage />;
-  const publicRsvpMatch = pathname.match(/^\/rsvp\/([a-f0-9]{64})$/);
+  const publicRsvpMatch = pathname.match(/^\/rsvp\/guest\/([A-Za-z0-9_-]{10})$/)
+    ?? pathname.match(/^\/rsvp\/([a-f0-9]{64})$/);
   if (publicRsvpMatch) return <PublicRsvpPage token={publicRsvpMatch[1]} />;
   const invitationMatch = window.location.pathname.match(/^\/rsvp\/([^/]+)\/?$/);
   if (window.location.pathname.startsWith("/rsvp")) {

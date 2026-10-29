@@ -10,7 +10,7 @@ const invitationKey = (token) => ({
   tokenHash: { S: createHash('sha256').update(token).digest('hex') },
 });
 
-const createRsvpToken = () => randomBytes(32).toString('hex');
+const createRsvpToken = () => randomBytes(8).toString('base64url').slice(0, 10);
 const publicRsvpKey = (token) => ({
   tokenHash: { S: createHash('sha256').update(token).digest('hex') },
 });
@@ -251,21 +251,32 @@ const rsvpAttributes = (value) => {
 };
 
 const storeAdminRsvp = async (client, PutItemCommand, tableName, value) => {
-  const token = createRsvpToken();
-  const item = {
-    ...publicRsvpKey(token),
-    recordType: { S: 'public-rsvp' },
-    displayName: { S: value.displayName },
-    internalName: { S: value.internalName },
-    ...(value.phone ? { phone: { S: value.phone } } : {}),
-    ...(value.email ? { email: { S: value.email } } : {}),
-    side: { S: value.side },
-    shareToken: { S: token },
-    updatedAt: { S: new Date().toISOString() },
-    ...rsvpAttributes(value),
-  };
-  await client.send(new PutItemCommand({ TableName: tableName, Item: item }));
-  return token;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const token = createRsvpToken();
+    const item = {
+      ...publicRsvpKey(token),
+      recordType: { S: 'public-rsvp' },
+      displayName: { S: value.displayName },
+      internalName: { S: value.internalName },
+      ...(value.phone ? { phone: { S: value.phone } } : {}),
+      ...(value.email ? { email: { S: value.email } } : {}),
+      side: { S: value.side },
+      shareToken: { S: token },
+      updatedAt: { S: new Date().toISOString() },
+      ...rsvpAttributes(value),
+    };
+    try {
+      await client.send(new PutItemCommand({
+        TableName: tableName,
+        Item: item,
+        ConditionExpression: 'attribute_not_exists(tokenHash)',
+      }));
+      return token;
+    } catch (error) {
+      if (error?.name !== 'ConditionalCheckFailedException') throw error;
+    }
+  }
+  throw new Error('Could not generate an available RSVP token after several attempts.');
 };
 
 export const handler = async (event) => {
@@ -273,24 +284,28 @@ export const handler = async (event) => {
   const path = event?.rawPath ?? '';
   const publicRsvpPath = /^\/rsvp\/?$/.test(path);
   const adminRsvpsPath = /^\/admin\/rsvps\/?$/.test(path);
-  const publicTokenMatch = /^\/rsvp\/([a-f0-9]{64})\/?$/.exec(path);
+  const publicTokenMatch = /^\/rsvp\/(?:guest\/([A-Za-z0-9_-]{10})|([a-f0-9]{64}))\/?$/.exec(path);
+  const tokenToShortenMatch = /^\/admin\/rsvps\/([a-f0-9]{64})\/short-link\/?$/.exec(path);
   const invitationMatch = /^\/rsvp\/([A-Za-z0-9_-]{10})\/?$/.exec(path);
 
   if (publicRsvpPath) {
     return jsonResponse(403, { error: 'RSVPs require the personal link shared with your invitation.' });
   }
 
-  if (!adminRsvpsPath && !publicTokenMatch && !invitationMatch) {
+  if (!adminRsvpsPath && !tokenToShortenMatch && !publicTokenMatch && !invitationMatch) {
     return jsonResponse(404, { error: 'Endpoint not found.' });
   }
   if (adminRsvpsPath && method !== 'GET' && method !== 'POST') {
+    return jsonResponse(405, { error: 'Method not allowed.' });
+  }
+  if (tokenToShortenMatch && method !== 'POST') {
     return jsonResponse(405, { error: 'Method not allowed.' });
   }
   if ((publicTokenMatch || invitationMatch) && method !== 'GET' && method !== 'POST') {
     return jsonResponse(405, { error: 'Method not allowed.' });
   }
 
-  if (adminRsvpsPath) {
+  if (adminRsvpsPath || tokenToShortenMatch) {
     const credentialsValid = hasValidAdminCredentials(event.headers?.authorization ?? event.headers?.Authorization);
     if (credentialsValid === null) {
       console.error('ADMIN_USERNAME or ADMIN_PASSWORD is not configured');
@@ -311,9 +326,17 @@ export const handler = async (event) => {
     const { DynamoDBClient, GetItemCommand, UpdateItemCommand, PutItemCommand, ScanCommand } = await import('@aws-sdk/client-dynamodb');
     const client = new DynamoDBClient({});
     if (publicTokenMatch) {
-      const token = publicTokenMatch[1];
-      const key = publicRsvpKey(token);
-      const { Item } = await client.send(new GetItemCommand({ TableName: tableName, Key: key }));
+      const token = publicTokenMatch[1] ?? publicTokenMatch[2];
+      let key = publicRsvpKey(token);
+      let { Item } = await client.send(new GetItemCommand({ TableName: tableName, Key: key }));
+      if (Item?.recordType?.S === 'public-rsvp-alias' && typeof Item.targetTokenHash?.S === 'string') {
+        key = { tokenHash: { S: Item.targetTokenHash.S } };
+        const canonical = await client.send(new GetItemCommand({
+          TableName: tableName,
+          Key: key,
+        }));
+        Item = canonical.Item;
+      }
       if (Item?.recordType?.S !== 'public-rsvp') return jsonResponse(404, { error: 'RSVP link not found.' });
 
       if (method === 'GET') {
@@ -344,7 +367,44 @@ export const handler = async (event) => {
           ':updatedAt': { S: new Date().toISOString() },
         },
       }));
-      return jsonResponse(200, { message: 'RSVP saved successfully.', token });
+      return jsonResponse(200, { message: 'RSVP saved successfully.', token: readStoredValue(Item, 'shareToken', 'S') ?? token });
+    }
+
+    if (tokenToShortenMatch) {
+      const oldToken = tokenToShortenMatch[1];
+      const canonicalKey = publicRsvpKey(oldToken);
+      const { Item } = await client.send(new GetItemCommand({ TableName: tableName, Key: canonicalKey }));
+      if (Item?.recordType?.S !== 'public-rsvp') return jsonResponse(404, { error: 'RSVP not found.' });
+      const currentToken = readStoredValue(Item, 'shareToken', 'S');
+      if (currentToken && /^[A-Za-z0-9_-]{10}$/.test(currentToken)) {
+        return jsonResponse(200, { token: currentToken });
+      }
+
+      for (let attempt = 0; attempt < 5; attempt += 1) {
+        const token = createRsvpToken();
+        try {
+          await client.send(new PutItemCommand({
+            TableName: tableName,
+            Item: {
+              ...publicRsvpKey(token),
+              recordType: { S: 'public-rsvp-alias' },
+              targetTokenHash: canonicalKey.tokenHash,
+            },
+            ConditionExpression: 'attribute_not_exists(tokenHash)',
+          }));
+        } catch (error) {
+          if (error?.name === 'ConditionalCheckFailedException') continue;
+          throw error;
+        }
+        await client.send(new UpdateItemCommand({
+          TableName: tableName,
+          Key: canonicalKey,
+          UpdateExpression: 'SET shareToken = :shareToken',
+          ExpressionAttributeValues: { ':shareToken': { S: token } },
+        }));
+        return jsonResponse(200, { token });
+      }
+      throw new Error('Could not generate an available RSVP token after several attempts.');
     }
 
     if (adminRsvpsPath) {

@@ -179,6 +179,53 @@ describe('handler', () => {
     }
   });
 
+  it('recognizes a short seeded RSVP token route', async () => {
+    const previousTableName = process.env.RSVP_TABLE_NAME;
+    delete process.env.RSVP_TABLE_NAME;
+    try {
+      const response = await handler({
+        rawPath: '/rsvp/guest/AbcD_123-X',
+        requestContext: { http: { method: 'GET' } },
+      });
+      assert.equal(response.statusCode, 500);
+      assert.match(response.body, /RSVP service is not configured/);
+    } finally {
+      if (previousTableName === undefined) delete process.env.RSVP_TABLE_NAME;
+      else process.env.RSVP_TABLE_NAME = previousTableName;
+    }
+  });
+
+  it('requires admin authentication to shorten an existing RSVP link', async () => {
+    const previousUsername = process.env.ADMIN_USERNAME;
+    const previousPassword = process.env.ADMIN_PASSWORD;
+    const previousTableName = process.env.RSVP_TABLE_NAME;
+    process.env.ADMIN_USERNAME = 'admin';
+    process.env.ADMIN_PASSWORD = 'test-password';
+    delete process.env.RSVP_TABLE_NAME;
+    try {
+      const request = {
+        rawPath: `/admin/rsvps/${'a'.repeat(64)}/short-link`,
+        requestContext: { http: { method: 'POST' } },
+      };
+      const unauthorized = await handler(request);
+      assert.equal(unauthorized.statusCode, 401);
+
+      const authorized = await handler({
+        ...request,
+        headers: { authorization: `Basic ${Buffer.from('admin:test-password').toString('base64')}` },
+      });
+      assert.equal(authorized.statusCode, 500);
+      assert.match(authorized.body, /RSVP service is not configured/);
+    } finally {
+      if (previousUsername === undefined) delete process.env.ADMIN_USERNAME;
+      else process.env.ADMIN_USERNAME = previousUsername;
+      if (previousPassword === undefined) delete process.env.ADMIN_PASSWORD;
+      else process.env.ADMIN_PASSWORD = previousPassword;
+      if (previousTableName === undefined) delete process.env.RSVP_TABLE_NAME;
+      else process.env.RSVP_TABLE_NAME = previousTableName;
+    }
+  });
+
   it('requires the invitation table to be configured', async () => {
     const previousTableName = process.env.RSVP_TABLE_NAME;
     delete process.env.RSVP_TABLE_NAME;
