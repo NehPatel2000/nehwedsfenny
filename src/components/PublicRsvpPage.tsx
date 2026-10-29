@@ -89,7 +89,6 @@ export const PublicRsvpPage: React.FC<PublicRsvpPageProps> = ({ token: initialTo
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          displayName: form.displayName,
           grahShantiAttending: form.grahShanti.attending,
           grahShantiPeople: form.grahShanti.attending ? form.grahShanti.people : 0,
           pithiAttending: form.pithi.attending,
@@ -197,18 +196,7 @@ export const PublicRsvpPage: React.FC<PublicRsvpPageProps> = ({ token: initialTo
             </div>
           ) : (
             <form onSubmit={submit} className="space-y-5">
-              <label className="block text-sm font-medium">
-                Display name
-                <input
-                  type="text"
-                  required
-                  maxLength={100}
-                  autoComplete="name"
-                  value={form.displayName}
-                  onChange={(change) => setForm((current) => ({ ...current, displayName: change.target.value }))}
-                  className="mt-1 block w-full rounded-lg border border-[#493A36]/20 bg-white px-3 py-2.5"
-                />
-              </label>
+              <p className="text-center font-serif-display text-2xl font-bold">{form.displayName}</p>
               <div>
                 <h2 className="mb-3 font-serif-display text-2xl font-bold">Day 1</h2>
                 <div className="space-y-3">

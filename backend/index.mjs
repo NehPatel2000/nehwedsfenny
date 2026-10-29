@@ -355,7 +355,10 @@ export const handler = async (event) => {
 
       const body = parseRequestBody(event);
       if (body.error) return jsonResponse(400, { error: body.error });
-      const result = validatePublicRsvp(body.value);
+      const result = validatePublicRsvp({
+        ...body.value,
+        displayName: readStoredValue(Item, 'displayName', 'S') ?? '',
+      });
       if (result.error) return jsonResponse(400, { error: result.error });
       await client.send(new UpdateItemCommand({
         TableName: tableName,

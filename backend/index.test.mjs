@@ -92,7 +92,7 @@ describe('validateSeedRsvp', () => {
     });
   });
 
-  it('allows an empty internal name but rejects invalid sides', () => {
+  it('keeps display name independent from an optional internal name', () => {
     const seed = {
       displayName: 'Guest',
       internalName: '',
@@ -105,17 +105,23 @@ describe('validateSeedRsvp', () => {
       weddingPeople: 0,
     };
     assert.ok(validateSeedRsvp(seed).error);
-    assert.equal(validateSeedRsvp({ ...seed, side: 'bride' }).value.internalName, '');
-    assert.equal(validateSeedRsvp({ ...seed, side: 'bride' }).value.phone, '');
-    assert.equal(validateSeedRsvp({ ...seed, side: 'bride' }).value.email, '');
-    assert.ok(validateSeedRsvp({ ...seed, side: 'bride', email: 'not-an-email' }).error);
-    assert.ok(validateSeedRsvp({ ...seed, side: 'bride', phone: 'p'.repeat(41) }).error);
+    const validSeed = { ...seed, internalName: '  Guest Internal  ', side: 'bride' };
+    const result = validateSeedRsvp(validSeed);
+    assert.equal(result.value.displayName, 'Guest');
+    assert.equal(result.value.internalName, 'Guest Internal');
+    const emptyInternalName = validateSeedRsvp({ ...seed, side: 'bride' });
+    assert.equal(emptyInternalName.value.displayName, 'Guest');
+    assert.equal(emptyInternalName.value.internalName, '');
+    assert.equal(emptyInternalName.value.phone, '');
+    assert.equal(emptyInternalName.value.email, '');
+    assert.ok(validateSeedRsvp({ ...validSeed, email: 'not-an-email' }).error);
+    assert.ok(validateSeedRsvp({ ...validSeed, phone: 'p'.repeat(41) }).error);
   });
 
   it('accepts valid email syntax and U.S. phone formats, and rejects invalid values', () => {
     const seed = {
       displayName: 'Guest',
-      internalName: '',
+      internalName: 'Guest',
       side: 'bride',
       grahShantiAttending: false,
       grahShantiPeople: 0,

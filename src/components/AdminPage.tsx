@@ -276,7 +276,7 @@ export const AdminPage: React.FC = () => {
             <>
             <form onSubmit={submitSeed} className="mb-8 rounded-xl border border-[#92916F]/40 bg-[#FBF7ED] p-5">
               <h2 className="mb-4 font-serif-display text-2xl font-bold">Add an internal RSVP</h2>
-              <p className="mb-4 text-sm text-stone-600">For seeded records only. Internal name is private and can be used instead of the display name for your own reference.</p>
+              <p className="mb-4 text-sm text-stone-600">For seeded records only. Internal name is private and can be used for your own reference.</p>
               <div className="grid gap-4 sm:grid-cols-2">
                 <label className="block text-sm font-medium">
                   Display name
