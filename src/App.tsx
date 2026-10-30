@@ -1,6 +1,7 @@
 import React from "react";
 import { Navbar } from "./components/Navbar";
 import { Main } from "./components/Main";
+import { PhotoGallerySection } from "./components/PhotoGallerySection";
 import { ScheduleSection } from "./components/ScheduleSection";
 import { RsvpSection } from "./components/RsvpSection";
 import { RsvpPage } from "./components/RsvpPage";
@@ -41,6 +42,8 @@ export default function App() {
 
       {/* Main page header with countdown and blessing */}
       <Main details={defaultWeddingDetails} onOpenRsvp={handleOpenRsvpScroll} />
+
+      <PhotoGallerySection />
 
       {/* Main Content Sections */}
       <main className="flex-1">

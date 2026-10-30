@@ -56,11 +56,11 @@ export const Main: React.FC<MainProps> = ({ details, onOpenRsvp }) => {
       {/* Editorial Frame Box with Gold Border */}
       <div className="relative z-10 mx-auto w-full max-w-3xl rounded-2xl border-2 border-[#92916F]/40 bg-[#FFFDF7]/90 p-6 text-center shadow-xl backdrop-blur-md sm:p-10 lg:p-12">
         
-        {/* Corner Geometric Accents */}
-        <div className="absolute top-2 left-2 w-3 h-3 border-t-2 border-l-2 border-[#92916F]" />
-        <div className="absolute top-2 right-2 w-3 h-3 border-t-2 border-r-2 border-[#92916F]" />
-        <div className="absolute bottom-2 left-2 w-3 h-3 border-b-2 border-l-2 border-[#92916F]" />
-        <div className="absolute bottom-2 right-2 w-3 h-3 border-b-2 border-r-2 border-[#92916F]" />
+        {/* Ornamental corners from the public-domain 1888 design */}
+        <img src="/joseph-watson-ornamental-corner.svg" alt="" aria-hidden="true" className="pointer-events-none absolute left-2 top-2 h-8 w-8 opacity-35" />
+        <img src="/joseph-watson-ornamental-corner.svg" alt="" aria-hidden="true" className="pointer-events-none absolute right-2 top-2 h-8 w-8 -scale-x-100 opacity-35" />
+        <img src="/joseph-watson-ornamental-corner.svg" alt="" aria-hidden="true" className="pointer-events-none absolute bottom-2 left-2 h-8 w-8 -scale-y-100 opacity-35" />
+        <img src="/joseph-watson-ornamental-corner.svg" alt="" aria-hidden="true" className="pointer-events-none absolute bottom-2 right-2 h-8 w-8 rotate-180 opacity-35" />
 
         {/* Sacred Sanskrit Blessing Pill */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#A52A3A]/10 border border-[#A52A3A]/30 text-[#A52A3A] mb-6">
