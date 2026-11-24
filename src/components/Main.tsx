@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, Heart, Send, Sparkles, ChevronDown } from 'lucide-react';
 import { GaneshIcon } from './GaneshIcon';
@@ -86,6 +87,10 @@ export const Main: React.FC<MainProps> = ({ details, onOpenRsvp }) => {
           <span className="px-2 font-normal italic text-[#A52A3A] sm:px-4">&</span>
           <span className="justify-self-start">{details.brideName}</span>
         </h1>
+
+        <p className="mx-auto mb-5 max-w-xl font-serif-display text-base italic leading-relaxed text-[#675A53] sm:text-lg">
+          Cordially invite you to join them in the celebration of their wedding.
+        </p>
 
         <div className="mx-auto mb-5 grid max-w-xl grid-cols-2 divide-x divide-[#92916F]/60 border-y border-[#92916F]/50 py-3 text-center text-xs font-medium leading-relaxed text-[#493A36] sm:text-sm">
           <p className="px-3 sm:px-5">

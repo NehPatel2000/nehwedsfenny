@@ -80,10 +80,10 @@ export const defaultSchedules: DaySchedule[] = [
       {
         id: "d1-e6",
         time: "7:00 PM",
-        title: "Dinner",
+        title: "Dinner & Sangeet",
         location: "Bridlewood of Madison",
-        description: "Dinner.",
-        iconName: "Utensils"
+        description: "Dinner and Sangeet.",
+        iconName: "Music"
       },
     ]
   },
@@ -105,9 +105,9 @@ export const defaultSchedules: DaySchedule[] = [
       {
         id: "d2-e2",
         time: "12:15 PM",
-        title: "Hast Melap",
+        title: "Hasta Melap",
         location: "Bridlewood of Madison",
-        description: "Hast Melap ceremony.",
+        description: "Hasta Melap ceremony.",
         iconName: "Sun"
       },
       {
