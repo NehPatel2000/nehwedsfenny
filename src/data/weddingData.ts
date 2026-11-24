@@ -71,7 +71,7 @@ export const defaultSchedules: DaySchedule[] = [
       },
       {
         id: "d1-e5",
-        time: "5:30 PM",
+        time: "4:00 PM",
         title: "Haldi",
         location: "Bridlewood of Madison",
         description: "Haldi ceremony.",
@@ -79,10 +79,18 @@ export const defaultSchedules: DaySchedule[] = [
       },
       {
         id: "d1-e6",
-        time: "7:00 PM",
-        title: "Dinner & Sangeet",
+        time: "6:00 PM",
+        title: "Dinner",
         location: "Bridlewood of Madison",
-        description: "Dinner and Sangeet.",
+        description: "Dinner.",
+        iconName: "Utensils"
+      },
+      {
+        id: "d1-e7",
+        time: "7:00 PM",
+        title: "Sangeet",
+        location: "Bridlewood of Madison",
+        description: "Sangeet.",
         iconName: "Music"
       },
     ]
@@ -91,7 +99,7 @@ export const defaultSchedules: DaySchedule[] = [
     dayNumber: 2,
     date: "Saturday, June 5, 2027",
     title: "",
-    subtitle: "Jaan Aagman, Hast Melap & Vidaai",
+    subtitle: "Jaan Aagman, Hasta Melap & Vidaai",
     tagline: "",
     events: [
       {
